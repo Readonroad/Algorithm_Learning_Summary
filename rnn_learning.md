@@ -1,3 +1,5 @@
+重点讲解：flags定义命令行参数/codecs模块/name_scope()和 variable_scope()/RNNCell类
+
 ## flags定义命令行参数
 ### 说明
 通过利用tf.app.flags组件可以实现使用命令行参数，用以接受命令行传递参数
