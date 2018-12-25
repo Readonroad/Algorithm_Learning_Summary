@@ -57,65 +57,6 @@ print('batch_size = %d' %batch_size)
 ```
 命令行中配置参数:python example.py --flag_name flag_value ...
 
-## codecs模块
-python可以支持多国语言，内部使用的是unicode编码。python做编码转换的过程是：原来编码 ——>内部编码——>目的编码。codecs用来编码转换。
-
-###将原有编码转化为内部编码
-```python
-import codecs
-#创建gb2312和utf-8的编码器
-#lookup()在python编解码器注册表中查找编解码器信息，并返回对应信息的对象，否则出错。
-look = codecs.lookup('gb2312')
-look2 = codece.lookup('utf-8')
-
-a = '编码器使用'
-print(len(a))
-print(a)
-
-#解码为对应的编码
-b = look.decode(a)  #将a解码为内部的编码：unicode
-print(b[0])        #输出：b[0]为对应编码的值，b[1]为编码的长度；type编码的类型
-print(b[1])
-print(type(b[0]))
-
-#将b[0]编码为gb2312类型的编码
-b2 = look.encode(b[0])
-print(b2[0])
-print(b2[1])
-print(type(b2[0]))
-```
-###打开某种编码格式的文件
-```python
-import codecs
-#open打开指定编码类型的文件
-file = codecs.open('file_path','r','coding_type')
-#文件打开后，读取文件时会自动转化为python内部的编码类型unicode
-file_read = file.read()
-```
-## pickle模块
-pickle是python中，压缩/保存/提取文件的模块
-
-#### 保存文件
-```python
-import pickle
-a_dict = {'a':1,'b':2,'c':[3,4]}
-file = open('pickle_ex.pickle','wb')
-pickle.dump(a_dict, file)
-file.close()
-```
-将定义的字典a_dict保存在文件pickle_ex.pickle文件中，并生成该文件。
-
-### 提取文件
-```python
-import pickle
-with open('pickle_ex.pickle','rb') as file:
-   a_dict = pickle.load(file)
-   ##这里用with as 使用后可以自动关闭文件，不需要用户再写关闭文件操作，更简洁
-```
-提取文件，还原数据。
-
-说明：with ... as一般用在文件和数据库连接中，好处可以自动关闭文件通道，释放数据库连接，更加简洁。
-
 ## name_scope()和 variable_scope()
 神经网络中结构复杂，参数较多。tf提供了通过变量名字来创建或者获取一个变量的机制。通过这个机制，在不同的函数中可以直接通过变量的名字来使用变量，而不需要将变量通过参数的形式到处传递。tf中定义变量的两种方式tf.Variable() 和 tf.get_variable()。
 
