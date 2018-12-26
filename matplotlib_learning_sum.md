@@ -54,7 +54,7 @@ plt.plot(x,y2,label = 'line 2')
 #添加图例
 plt.legend(loc = 'best') #best表示最佳位置，其他参数如:right,left,center,upper(lower) right,upper(lower)left, upper(lower) center
 ```
-#### 方式二：
+#### 方式二
 指定plot（）返回值，通过返回值，可以修改plot中之前定义的lable信息
 ```python
 #设置图例，保证调用plot时要返回对应的值,要求返回的变量要用逗号结尾，表示plt.plot()返回的是一个列表
