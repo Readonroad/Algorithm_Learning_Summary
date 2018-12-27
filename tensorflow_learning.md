@@ -501,6 +501,13 @@ loss = tf.reduce_mean(cross_entropy)
 #直接计算,利用交叉熵公式计算，输入样本的交叉熵求均值
 loss = -tf.reduce_mean(y*tf.log(y))
 ```
+#### dropout层
+dropout层大量用于全连接网路，一般设置为0.5或0.3，卷积网络隐藏层中由于卷积自身的稀疏或稀疏化的relu函数的大量使用，Dropout策略在卷积网路隐藏层中使用较少。dropout是一个超参，需要根据具体的网络和具体应用领域进行尝试。
+```python
+keep_prob = tf.placeholder(tf.float32)   #保留神经元的比例
+Wx_plus_b = tf.nn.dropout(Wx_plus_b, keep_prob)
+```
+训练时，针对dropout后的参数调整，而测试的时候，会让所有神经元权重乘以概率p对测试样本预测。
 #### cnn相关函数
 
 ##### 卷积:tf.nn.conv2d()
