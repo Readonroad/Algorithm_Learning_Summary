@@ -533,7 +533,7 @@ tf.nn.max_pool(input, [1,pool_size,pool_size,1], [1,rstride,cstride,1] , padding
 
 pool_size是pool的大小，rstride和cstride分别是行列上的步长，padding可取SAME或VALID
 #### RNNCell类
-RNNCell只是一个抽象类，我们用的时候都是用的它的两个子类BasicRNNCell和BasicLSTMCell。没调用一次RNNCell的call方法，相当于在时间删个“推进一步”。
+RNNCell只是一个抽象类，我们用的时候都是用的它的两个子类BasicRNNCell和BasicLSTMCell。每调用一次RNNCell的call方法，相当于在时间上“推进一步”。
 
 ##### 单步RNN:BasicRNNCell和BasicLSTMCell
 
@@ -547,7 +547,7 @@ cell = tf.nn.rnn_cell.BasicRNNCell(num_units = 128) #隐藏层的尺寸为128
 print(cell.state_size)  
 
 inputs = tf.placeholder(np.float32, shape=(32,100))  #输入的尺寸为32*100
-h0 = cell.zero_state(32,np.float32) #zero-state()得到一个全0的初始状态32*128
+h0 = cell.zero_state(32,np.float32) #zero_state()得到一个全0的初始状态32*128
 output,h1 = cell.call(inputs, h0)  #(output,next_state)=call(input, state)
 
 print(h1.shape)    #调用call后隐藏层的输出尺寸为32*128,32为batch_size
@@ -563,7 +563,7 @@ print(h1.h)  # shape=(32, 128)
 print(h1.c)  # shape=(32, 128)
 ```
 ##### 多步执行：tf.nn.dynamic_rnn
-将输入inputs的数据格式定义为（batch_size, time_steps,input_size),其中time_steps为序列本身的长度，则用tf.nn.dynamic_rnn()可以多次调用time_steps次，输出outputs为time_steps步中所有的输入，state为最后一步的隐状态。
+将输入inputs的数据格式定义为（batch_size, time_steps,input_size),其中time_steps为序列本身的长度，则用tf.nn.dynamic_rnn()可以调用time_steps次，输出outputs为time_steps步中所有的输入，state为最后一步的隐状态。
 
 使用方法：
 ```python
