@@ -1,5 +1,17 @@
 #coding=gbk
 ##通过RNN模型对MNIST数据进行分类
+'''
+遇到的坑：
+1.outputs,state = tf.nn.dynamic_rnn(cell, inputs, state0)
+正确写法：outputs,state = tf.nn.dynamic_rnn(cell, inputs, initial_state = state0)
+initial_state是可选参数，需要加上变量名，否则会按顺序识别为其他变量
+2.tf.nn.dynamic_rnn()的输出，Outputs是包含num_step次的输出，而state是最后一次的状态，都不是最后的数据
+需要对最后一次的结果进行变换，得到最终的结果。另外，对于lstm，state有两个状态，state[0]为状态c,state[1]为状态h。
+3.测试的时候，需要从测试样本中选取batch_size个样本进行测试
+由于rnn_model中隐藏状态state0初始化时大小为batch_size。
+疑问：
+是否可以针对所有样本进行测试？？？
+'''
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
