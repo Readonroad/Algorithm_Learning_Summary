@@ -563,7 +563,7 @@ print(h1.h)  # shape=(32, 128)
 print(h1.c)  # shape=(32, 128)
 ```
 ##### 多步执行：tf.nn.dynamic_rnn
-将输入inputs的数据格式定义为（batch_size, time_steps,input_size),其中time_steps为序列本身的长度，则用tf.nn.dynamic_rnn()可以调用time_steps次，输出outputs为time_steps步中所有的输入，state为最后一步的隐状态。
+将输入inputs的数据格式定义为（batch_size, time_steps,input_size),其中time_steps为序列本身的长度，则用tf.nn.dynamic_rnn()可以调用time_steps次，输出outputs为time_steps步中所有的输出，state为最后一步的隐状态。
 
 使用方法：
 ```python
@@ -607,6 +607,6 @@ print(h1)    #隐藏层输出是一个tuple，含有3个32*128的向量
 多层的RNN如果想要进行多步执行，要需要使用tf.nn.dynamic_rnn().
 
 ##### 注意事项
-1. 调用call()或dynamic_rnn()函数后得到的output并不是最终的输出，在tf的实现中，output和state是相同的，如果要得到真正的输出，需要额外对输出定义新的变换，才能得到最后的输出;
+1. 调用call()或dynamic_rnn()函数后得到的output并不是最终的输出，在tf的实现中，output是调用次数所有的输出，而state是最后一步的隐藏层状态。如果要得到最终的输出，需要额外对输出定义新的变换。注：如果使用output计算最终的输出，需要考虑到output中包含所有次数的结果。
 
 2. 版本不同引起的错误，注意不同的版本，使用的函数或者参数可能不同。
