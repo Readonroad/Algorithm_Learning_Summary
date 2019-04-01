@@ -1,4 +1,4 @@
-tensorflow模型中使用的python相关模块和函数汇总：codecs模块/pickle模块
+python相关模块和函数汇总：codecs模块/pickle模块
 ## codecs模块
 python可以支持多国语言，内部使用的是unicode编码。python做编码转换的过程是：原来编码 ——>内部编码——>目的编码。codecs用来编码转换。
 
@@ -61,6 +61,39 @@ with open('pickle_ex.pickle','rb') as file:
 loads()表示从一个字符串中恢复对象。
 
 说明：with ... as一般用在文件和数据库连接中，好处可以自动关闭文件通道，释放数据库连接，更加简洁。
+
+## python3编码原理总结
+* 字符编码（ASCII编码）将128个字符编码到计算机中，即大小写英文字母、数字和一些符号，ASCII编码是1个字节
+* GB2312   中文超出了ACSII编的范文，中文编码GB2312
+* unicode  为了统一各个国家不同的编码，产生了unicode编码，解决了乱码问题。UTF-8是unicode编码中的一个实现，UTF-8编码把一个Unicode字符根据不同的数字大小编码成1-6个字节，可以节省空间
+
+### 默认编码
+python3编译器默认的是UTF-8编码;linux操作系统默认编码为UTF-8,windows系统默认编码为GBK
+```python
+import sys
+import locale #根据计算机用户所使用的语言、所在国家或地区，以及当地的文化传统所定义的一个软件运行时的语言环境
+print(sys.getdefaultencoding())   #系统默认编码,python3编译器本身的默认编码UTF-8，python2默认为ASCII
+print(locale.getdefaultlocale())  #本地默认编码，即操作系统默认的编码
+```
+系统默认编码与python2和python3有关
+本地默认编码至于操作系统有关
+
+### 头文件编码声明 “#coding = utf-8”
+Python程序中的头文件编码声明的意思是python3编译器在读取该.py文件时，应该用什么格式解码。该声明不会改变系统默认编码和本地默认编码。
+```
+系统默认编码：在python3编译器读取.py文件时，若头文件没有编码声明，则使用系统默认编码对.py文件进行解码。且在调用编码encode()函数时，不知道编码方式，采用系统默认编码
+
+本地默认编码：编写python3程序时，若使用了open()函数，不指定encoding参数，则自动使用本地默认编码。
+```
+### 总结
+- 所有文件的编码格式都是当前编辑器决定的。当使用Python的 open( ) 函数时，是内存中的进程与磁盘的交互，而这个交互过程中的编码格式则是使用操作系统的默认编码（Linux为utf-8，windows为gbk）
+- 进程在内存中的表现是“ unicode ”的编码；当python3编译器读取磁盘上的.py文件时，是默认使用“utf-8”的；当进程中出现open(), write() 这样的存储代码时，需要与磁盘进行存储交互时，则是默认使用操作系统的默认编码。
+- 从网络或磁盘上读取了字节流，读到的数据类型为bytes，要将bytes变为str,需要用decode()方法解码。
+
+### 文件操作误区
+- 用python函数open()、write()存储代码时，默认使用操作系统的默认编码
+- open()函数打开文件时，打开模式中带'b'表示是字节流操作，读取时，得到的是字节流类型bytes，而不是str类型，存储时，也需要转化为对应的bytes类型。通过decode()进行解码
+- open()函数，打开模式中不带'b',则操作类型对应为str类型，可以指定encoding参数，设定对应的编码类型
 
 ## numpy模块函数函数
 NumPy是python中的要给扩展程序库，支持高端大量的**维度数组与矩阵**运算，同时对数据运算提供大量的数学函数库。基于c语言实现，运算速度快。
