@@ -164,3 +164,120 @@ list(filter(is_odd,[1,2,3,4,5]))
 sorted([1,2,-1,3,5],key =abs)  #按绝对值大小进行排序
 sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower,reverse=True)  #忽略大小写的排序吗，reverse为True，反向排序
 ```
+### 函数作为返回值
+高阶函数可以接受函数作为参数，还可以把函数作为结果值返回
+```python
+def calc_sum(*args):
+    ax = 0
+    for n in args:
+        ax+=n
+    return ax
+
+#如果不需要立刻求和，则可以不返回求和的结果，而返回求和的函数
+def lazy_sum(*args):
+    def sum():
+        ax = 0
+        for n in args:  
+            ax+=n
+        return ax
+    return sum
+
+#当调用lazy_sum()函数时，返回的不是求和结果，而是求和函数
+#当调用lazy_sum()函数时，每次调用都会返回一个新的函数，即使传入的参数相同
+f=lazy_sum([1,2,3,4])
+#调用函数f后，才能计算求和的结果
+f()   #执行结果为10
+```
+返回的函数在其定义内部引用了局部变量args，所以，当一个函数返回了一个函数后，其内部的局部变量还被新函数引用。
+```python 
+def count():
+    fs=[]
+    for i in range(1,4):
+        def f():
+            return i*i
+        fs.append(f)     #将函数作为返回值加入fs中，
+    return fs
+
+f1,f2,f3 = count()  
+#执行结果
+f1(),f2(),f3()   #执行结果均为9，返回的函数引用了变量i,但并未立即执行，等三个函数都返回时，引用的变量i变成了3，故最终结果为9
+```
+返回函数最好不要引用任何循环变量，或者后续会发生变化的变量;如果要引用循环变量，就再创建一个函数，用改函数的参数绑定循环变量当前的值
+```python
+def count():
+    def f(j):
+        def g():
+            return j*j
+        return g
+    fs=[]
+    for i in range(1,4):
+        fs.append(f(i))     #将函数作为返回值加入fs中，
+    return fs
+
+f1,f2,f3 = count() 
+f1(),f2(),f3()    #执行结果为1,4,9
+```
+### 装饰器
+函数是一个对象，函数对象可以被赋值为变量，通过变量也能调用该函数
+```python
+def now():
+    print('2019-4-4')
+
+f=now   #函数赋值给变量
+f()     #通过变量调用函数，等价于now()
+#函数对象属性 __name__,可以获取函数的名字
+now.__name__   # ’now'
+```
+若希望增加now()函数的功能，如在调用前后自动打印日志，又不希望修改now()函数的定义，这种在代码运行期间动态增加功能的方式，称之为“装饰器”。decorator是一个返回函数的高阶函数。
+```python
+import functools
+def log(func):
+    def wrapper(*args,**kw):
+        @functools.wraps(func)    #保留原函数 func 的属性
+        print("call %s():" %func.__name__)
+        return func(*args,**kw)
+    return wrapper
+
+#在now()函数定义出，增加 @log,执行now()的时候，相当于执行语句：now=log(now)
+@log
+def now():
+   print('2019-4-4')
+
+#调用now
+now()  
+#结果为
+#call now():
+#2019-4-4
+```
+如果decorator本身需要传入参数，这需要编写一个返回decorator的高阶函数
+```python 
+import functools
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)   #保留原函数 func 的属性
+        def wrapper(*args,**kw):
+            print('%s %s():'%(text,func.__name__))
+            return func(*args,**kw)
+        return wrapper
+    return decorator
+
+#定义前，增加@log('excute')  相当于执行语句：now=log('excute')(now)
+@log('excute')
+def now():
+    print('2019-4-4')
+
+#执行
+now()
+#结果为
+#excute now():
+#2019-4-4
+now.__name__   #结果为 'wrapper'
+```
+先执行log('execute')，返回的是decorator函数，再调用返回的函数，参数是now函数，返回值最终是wrapper函数。经过decorator装饰后，函数的属性__name__变成'wrapper'，要想保留原来函数的属性，就需要将原始函数的__name__等属性复制到wrapper函数中。利用python内置的functools.wraps。
+
+### 偏函数
+functools.partial 帮助创建一个偏函数，作用是把一个函数的某些参数固定住（即设置默认值），返回一个新的函数，调用这个新的函数会更加简单。
+```python
+import functools
+int2 = functools.partial(int,base = 2)    #int()将输入按给定的base转化为对应的整数
+```
